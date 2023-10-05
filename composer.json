@@ -1,0 +1,14 @@
+{
+	"name": "foul11/linux-auto-conf",
+	"type": "project",
+	"repositories": [
+		{
+			"type": "vcs",
+			"url": "git@github.com:foul11/PLibs.git"
+		}
+	],
+	"require": {
+		"foul11/p-libs": "dev-master",
+		"php-school/cli-menu": "^4.3"
+	}
+}
