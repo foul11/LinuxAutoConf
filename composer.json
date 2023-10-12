@@ -9,6 +9,7 @@
 	],
 	"require": {
 		"foul11/p-libs": "dev-master",
-		"php-school/cli-menu": "^4.3"
+		"php-school/cli-menu": "^4.3",
+		"hassankhan/config": "^3.1"
 	}
 }

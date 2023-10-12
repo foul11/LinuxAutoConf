@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "565e14451cc4d8f05be049493a7535e4",
+    "content-hash": "bf9af8ad19570e79daf56b72d481e4c2",
     "packages": [
         {
             "name": "beberlei/assert",
@@ -79,12 +79,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/foul11/PLibs.git",
-                "reference": "d59778861edb160b3b5c2b3df10c1af265ffc8c8"
+                "reference": "8fbb6cecbf46769235b9ed9a3e17dc5854053c07"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/foul11/PLibs/zipball/d59778861edb160b3b5c2b3df10c1af265ffc8c8",
-                "reference": "d59778861edb160b3b5c2b3df10c1af265ffc8c8",
+                "url": "https://api.github.com/repos/foul11/PLibs/zipball/8fbb6cecbf46769235b9ed9a3e17dc5854053c07",
+                "reference": "8fbb6cecbf46769235b9ed9a3e17dc5854053c07",
                 "shasum": ""
             },
             "default-branch": true,
@@ -99,7 +99,69 @@
                 "source": "https://github.com/foul11/PLibs/tree/master",
                 "issues": "https://github.com/foul11/PLibs/issues"
             },
-            "time": "2023-10-05T18:20:14+00:00"
+            "time": "2023-10-08T22:36:17+00:00"
+        },
+        {
+            "name": "hassankhan/config",
+            "version": "3.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/hassankhan/config.git",
+                "reference": "8e1c07f4fdc2b986b8a781f0dcba155af2a579b6"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/hassankhan/config/zipball/8e1c07f4fdc2b986b8a781f0dcba155af2a579b6",
+                "reference": "8e1c07f4fdc2b986b8a781f0dcba155af2a579b6",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.4"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^9.5",
+                "scrutinizer/ocular": "^1.9",
+                "squizlabs/php_codesniffer": "^3.6",
+                "symfony/yaml": "^5.4"
+            },
+            "suggest": {
+                "symfony/yaml": "^5.4"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Noodlehaus\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Hassan Khan",
+                    "homepage": "http://hassankhan.me/",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Lightweight configuration file loader that supports PHP, INI, XML, JSON, and YAML files",
+            "homepage": "http://hassankhan.me/config/",
+            "keywords": [
+                "config",
+                "configuration",
+                "ini",
+                "json",
+                "microphp",
+                "unframework",
+                "xml",
+                "yaml",
+                "yml"
+            ],
+            "support": {
+                "issues": "https://github.com/hassankhan/config/issues",
+                "source": "https://github.com/hassankhan/config/tree/3.1.0"
+            },
+            "time": "2022-12-20T19:48:37+00:00"
         },
         {
             "name": "php-school/cli-menu",
