@@ -39,6 +39,10 @@ function preg_match_first(string $pattern, string $subject, $offset = 0) {
     return $match[1] ?? $match[0] ?? '';
 }
 
+function f(string $format_str, ...$parm) {
+    return sprintf($format_str, ...$parm);
+}
+
 try {
     App::init($argv);
 } catch (ExeptionApp $e) {

@@ -12,9 +12,9 @@ class Remote extends AMenu{
     function __construct($conf, $menu, $parent) {
         parent::__construct($conf, $menu, $parent);
         
-        foreach ($conf->get('remote', []) as $host) {
+        foreach ($conf->get('remote', []) as $key => $host) {
             $prettyName = $host['name'] ?? $host['ip'] ?? 'unknown';
-            $menu->addItem($prettyName, function(CliMenu $menu) use($host, $prettyName) {
+            $menu->addItem(f('[%s] %s', $key + 1, $prettyName), function(CliMenu $menu) use($host, $prettyName) {
                 $ssh = $this->connectSSH($host['ip'], $host['port'] ?? 22, $host['password'] ?? '');
                 $this->installApp($ssh);
                 $this->ssh2_run_stdout($ssh, "chmod +x /usr/local/bin/linux_auto_conf && /usr/local/bin/linux_auto_conf --title $prettyName");
@@ -48,7 +48,7 @@ class Remote extends AMenu{
         throw new ExeptionApp('failed auth in ssh');
     }
     
-    function ssh2_run($ssh2, $cmd, &$out = null, &$err = null) {
+    function ssh2_run($ssh2, $cmd, &$out = null, &$err = null, $debug = true) {
         $result = false;
         $out = '';
         $err = '';
@@ -90,6 +90,9 @@ class Remote extends AMenu{
                             if ($one != '') {
                                 $out .= $one;
                                 $wait = 0;
+                                
+                                if ($debug)
+                                    echo $one;
                             }
                         }
                         
@@ -104,6 +107,9 @@ class Remote extends AMenu{
                             if ($one != '') {
                                 $err .= $one;
                                 $wait = 0;
+                                
+                                if ($debug)
+                                    echo $one;
                             }
                         }
                     }
@@ -230,7 +236,7 @@ class Remote extends AMenu{
             STUB);
         $phar->stopBuffering();
         
-        $this->ssh2_run($ssh, 'php -v', $out, $err);
+        $this->ssh2_run($ssh, 'php -v', $out, $err, false);
         
         if (strpos($err, 'command not found') !== false || version_compare(preg_match_first('/PHP (\d+\.\d+\.\d+)/', $out), '8.2', '<')) {
             Debug::notice('Version is not suitable, pls wait install...');
@@ -244,10 +250,7 @@ class Remote extends AMenu{
             add-apt-repository ppa:ondrej/php && \
             apt update && \
             apt install -y php8.2
-            CMD, $out, $err);
-            
-            Debug::notice($err);
-            Debug::notice($out);
+            CMD);
         } else {
             Debug::notice('Version is suitable');
         }
@@ -266,7 +269,7 @@ class Remote extends AMenu{
             'lz4',
         ];
         
-        $this->ssh2_run($ssh, 'php -m', $out, $err);
+        $this->ssh2_run($ssh, 'php -m', $out, $err, false);
         $installedExt = explode("\n", str_replace("\r", '', strtolower($out)));
         $needInstall = [];
         
@@ -278,7 +281,7 @@ class Remote extends AMenu{
         
         if ($needInstall) {
             Debug::notice('Install php modules: ' . implode(', ', $needInstall));
-            $this->ssh2_run($ssh, 'apt install -y ' . implode(' ', array_map(fn($ext) => 'php8.2-' . $ext, $needInstall)), $out, $err);
+            $this->ssh2_run($ssh, 'apt install -y ' . implode(' ', array_map(fn($ext) => 'php8.2-' . $ext, $needInstall)));
         }
         
         ssh2_scp_send($ssh, $tmpPahr, '/usr/local/bin/linux_auto_conf');

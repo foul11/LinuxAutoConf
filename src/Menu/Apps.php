@@ -15,6 +15,7 @@ class Apps extends AMenu {
         
         ($walker = function(CliMenuBuilder $menu, $dir) use(&$walker) {
             $files = [];
+            $count = 0;
             
             foreach (new \DirectoryIterator(__DIR__ . '/../' . $dir) as $fileInfo) {
                 if ($fileInfo->isDot())
@@ -22,7 +23,7 @@ class Apps extends AMenu {
                 
                 if ($fileInfo->isDir()) {
                     $bname = $fileInfo->getBasename();
-                    $menu->addSubMenu("→ {$bname}", function(CliMenuBuilder $menu) use(&$walker, $bname, $dir) {
+                    $menu->addSubMenu(f('[%s] → %s', ++$count, $bname), function(CliMenuBuilder $menu) use(&$walker, $bname, $dir) {
                         $menu->disableDefaultItems();
                         $menu->setTitle(self::TITLE . ' / ' . $bname);
                         
@@ -37,7 +38,7 @@ class Apps extends AMenu {
             
             foreach ($files as $file) {
                 $menu
-                    ->addMenuItem(new LazyMenuMenuItem("$file", function(CliMenuBuilder $menu) use($dir, $file) {
+                    ->addMenuItem(new LazyMenuMenuItem(f('[%s] %s', ++$count, $file), function(CliMenuBuilder $menu) use($dir, $file) {
                         $clazz = (["\\". str_replace('/', '\\', $dir) ."\\$file", 'init']);
                         
                         try {
