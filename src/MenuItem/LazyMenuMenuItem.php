@@ -68,7 +68,9 @@ class LazyMenuMenuItem implements MenuItemInterface, PropagatesStyles {
                 
                 \CliMenuReflects::getMenu($builder)->setParent($parentMenu);
                 
-                ($this->buildCallback)($builder);
+                if (($this->buildCallback)($builder) === false)
+                    return false;
+                
                 $menu = $builder->build();
                 $this->subMenu = $menu;
                 

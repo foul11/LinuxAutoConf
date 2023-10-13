@@ -1,13 +1,15 @@
 <?php
 namespace Config;
 use Abstracts\AConfig;
+use Arturka\CLI\Debug;
 
 class KeyVal extends AConfig {
     protected $flatmap = [];
     protected $flatmap_rev = [];
     
     protected ?string $opt_nl = null;         // Разделитель новых строк, используется прасинге и генерации (1 символ)
-    protected ?string $opt_delimiter = null;  // Разделитель между Key -> Value (Может быть больше чем 1 символ)
+    protected ?string $opt_delimiter = null;  // Разделитель между Key -> Value (Может быть регулярным выражением)
+    protected ?string $opt_join = null;       // Строка для склейки Key [join] Value (если не задан равняется opt_delimiter)
     protected array $opt_comment = ['#'];     // Массив символов с которого начинается комментарий (строки не больше 1-ой длины)
     protected bool $opt_parse_quotes = false; // Автоматически подставлять и парсить двойные кавычки
     protected bool $opt_dup_parm_last = true; // Если true то если есть дублирующию ключи будет записан последний из них
@@ -28,6 +30,7 @@ class KeyVal extends AConfig {
                 case 'parse_quotes': $this->opt_parse_quotes = $opt; break;
                 case 'dup_parm_last': $this->opt_dup_parm_last = $opt; break;
                 case 'case_ignore': $this->opt_case_ignore = $opt; break;
+                case 'join': $this->opt_join = $opt; break;
                 
                 default: throw new \Exception("Option '$key' not found");
             }
@@ -44,6 +47,9 @@ class KeyVal extends AConfig {
         
         if (is_null($this->opt_delimiter))
             throw new \Exception('You need to pass the delimiter');
+        
+        if (is_null($this->opt_join))
+            $this->opt_join = $this->opt_delimiter;
         
         $this->quote_chars = implode('', $this->opt_comment) . ' ';
     }
@@ -80,7 +86,7 @@ class KeyVal extends AConfig {
                     # (?<section>\[[^\]]*\]) $s* (?<comment>$RCmnt) | # ini sections
                       (?<comment>$RCmnt)
                     | (?:
-                        (?<key>[^$c]+?)
+                        (?<key>[^$c$Ccr]+?)
                         \s* $d $s*
                         (?:
                             "(?<value_quote>.*)"
@@ -106,6 +112,9 @@ class KeyVal extends AConfig {
             $entry = $matches[$key];
             
             if ($fval !== $entry[0]){
+                Debug::error(bin2hex($fval));
+                Debug::error(bin2hex($entry[0]));
+                
                 throw new \Exception("Mismatched state between regular and lines: '{$fval}' !== '{$entry[0]}'");
             }
             
@@ -147,7 +156,7 @@ class KeyVal extends AConfig {
             if (isset($entry['_edited']) && $entry['_edited']) {
                 $value = $entry['value'] ?? '"' . $entry['value_quote'] . '"';
                 $comment = $entry['comment'] ?? '';
-                $out[] = "{$entry['key']}{$this->opt_delimiter}{$value}{$comment}";
+                $out[] = "{$entry['key']}{$this->opt_join}{$value}{$comment}";
             } else $out[] = $entry[0];
         }
         
@@ -158,7 +167,7 @@ class KeyVal extends AConfig {
         if ($this->opt_case_ignore)
             $name = strtolower($name);
         
-        return parent::get($name);
+        return parent::_get($name);
     }
     
     protected function _set(string $name, $value) {

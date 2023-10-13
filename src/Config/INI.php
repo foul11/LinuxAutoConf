@@ -1,6 +1,7 @@
 <?php
 namespace Config;
 use Abstracts\AConfig;
+use Arturka\CLI\Debug;
 
 class INI extends AConfig {
     protected $flatmap = [];
@@ -8,7 +9,8 @@ class INI extends AConfig {
     protected $insert = [];
     
     protected ?string $opt_nl = null;                  // Разделитель новых строк, используется прасинге и генерации (1 символ)
-    protected string $opt_delimiter = '=';             // Разделитель между Key -> Value (Может быть больше чем 1 символ)
+    protected string $opt_delimiter = '=';             // Разделитель между Key -> Value (Может быть регулярным выражением)
+    protected ?string $opt_join = null;                // Строка для склейки Key [join] Value (если не задан равняется opt_delimiter)
     protected array $opt_comment = ['#',';'];          // Массив символов с которого начинается комментарий (строки не больше 1-ой длины)
     protected bool $opt_parse_quotes = false;          // Автоматически подставлять и парсить двойные кавычки
     protected bool $opt_dup_parm_last = true;          // Если true то если есть дублирующию ключи будет записан последний из них
@@ -38,6 +40,7 @@ class INI extends AConfig {
                 case 'zend_array': $this->opt_zend_array = $opt; break;
                 case 'array_delimiter': $this->opt_array_delimiter = $opt; break;
                 case 'ignore_section_error': $this->opt_ignore_section_error = $opt; break;
+                case 'join': $this->opt_join = $opt; break;
                 
                 default: throw new \Exception("Option '$key' not found");
             }
@@ -54,6 +57,9 @@ class INI extends AConfig {
         
         if (is_null($this->opt_delimiter))
             throw new \Exception('You need to pass the delimiter');
+        
+        if (is_null($this->opt_join))
+            $this->opt_join = $this->opt_delimiter;
         
         $this->quote_chars = implode('', $this->opt_comment) . ' ' . $this->opt_array_delimiter;
         $this->re_Name = $this->buildRegex_Name();
@@ -91,7 +97,7 @@ class INI extends AConfig {
                       (?<section>\[[^\]]*\]) $s* (?<comment>$RCmnt)  # ini sections
                     | (?<comment>$RCmnt)
                     | (?:
-                        (?<key>[^$c]+?)
+                        (?<key>[^$c$Ccr]+?)
                         \s* $d $s*
                         (?:
                             "(?<value_quote>.*)"
@@ -145,6 +151,9 @@ class INI extends AConfig {
             $entry = $matches[$key];
             
             if ($fval !== $entry[0]){
+                Debug::error(bin2hex($fval));
+                Debug::error(bin2hex($entry[0]));
+                
                 throw new \Exception("Mismatched state between regular and lines: '{$fval}' !== '{$entry[0]}'");
             }
             
@@ -240,7 +249,7 @@ class INI extends AConfig {
         
         $value = $entry['value'] ?? '"' . $entry['value_quote'] . '"';
         $comment = $entry['comment'] ?? '';
-        return "{$entry['key']}{$this->opt_delimiter}{$value}{$comment}";
+        return "{$entry['key']}{$this->opt_join}{$value}{$comment}";
     }
     
     function __toString() {

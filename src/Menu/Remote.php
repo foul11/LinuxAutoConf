@@ -26,13 +26,26 @@ class Remote extends AMenu{
         $menu->addItem('[B]ack', new GoBackAction());
     }
     
-    function connectSSH($host, $port, $password) { // todo: other auth methods
+    function connectSSH($host, $port, $password) { // todo: other auth methods (private key)
         $ssh = ssh2_connect($host, $port);
         
-        if (ssh2_auth_password($ssh, 'root', $password) === false)
-            throw new ExeptionApp('failed auth ssh with password');
+        if (!is_resource($ssh))
+            throw new ExeptionApp("failed connect to $host");
         
-        return $ssh;
+        $methods = ssh2_auth_none($ssh, 'root');
+        
+        if ($methods === true)
+            return $ssh;
+        
+        if (in_array('password', $methods))
+            if (ssh2_auth_password($ssh, 'root', $password))
+                return $ssh;
+        
+        if (in_array('agent', $methods))
+            if (ssh2_auth_agent($ssh, 'root'))
+                return $ssh;
+        
+        throw new ExeptionApp('failed auth in ssh');
     }
     
     function ssh2_run($ssh2, $cmd, &$out = null, &$err = null) {

@@ -1,6 +1,8 @@
 <?php
 use Noodlehaus\Config;
 use Noodlehaus\ConfigInterface;
+use Noodlehaus\Exception\EmptyDirectoryException;
+use Noodlehaus\Exception\FileNotFoundException;
 use Noodlehaus\Parser\ParserInterface;
 
 class AppConfig extends Config {
@@ -29,7 +31,7 @@ class AppConfig extends Config {
     protected function loadFromFile($path, ParserInterface $parser = null) {
         $paths      = $this->getValidPath($path);
         $this->data = [];
-
+        
         foreach ($paths as $path) {
             if ($parser === null) {
                 // Get file information
@@ -55,5 +57,31 @@ class AppConfig extends Config {
                 $this->data = array_merge_recursive($this->data, $parser->parseFile($path));
             }
         }
+    }
+    
+    /** @inheritDoc */
+    protected function getValidPath($path) {
+        // If `$path` is array
+        if (is_array($path)) {
+            return $this->getPathFromArray($path);
+        }
+
+        // If `$path` is a directory
+        if (is_dir($path)) {
+            $paths = iterator_to_array(new RegexIterator(new FilesystemIterator($path), '/^.+\/.*\..*$/')); // glob($path . '/*.*');
+            
+            if (empty($paths)) {
+                throw new EmptyDirectoryException("Configuration directory: [$path] is empty");
+            }
+
+            return $paths;
+        }
+
+        // If `$path` is not a file, throw an exception
+        if (!file_exists($path)) {
+            throw new FileNotFoundException("Configuration file: [$path] cannot be found");
+        }
+
+        return [$path];
     }
 }

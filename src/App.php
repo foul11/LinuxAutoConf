@@ -64,6 +64,13 @@ class App {
             $conf->merge($confd);
         }
         
+        Log::init($conf);
+        Store::init($conf);
+        Shell::init($conf);
+        
+        Debug::notice('Press any key to continue');
+        Shell::readChar();
+        
         $app = new App($argv, $conf);
     }
 }

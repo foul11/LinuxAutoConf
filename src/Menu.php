@@ -20,8 +20,8 @@ class Menu extends AMenu {
             ->setBackgroundColour('black')
             ->setForegroundColour('white');
         
-        $menu->addSubMenu('[A]pps', function($menu) use($conf) { new Apps($conf, $menu, $this); });
-        $menu->addSubMenu('[R]emote', function($menu) use($conf) { new Remote($conf, $menu, $this); });
+        $menu->addSubMenu('[A]pps', function($menu) { new Apps($this->conf, $menu, $this); });
+        $menu->addSubMenu('[R]emote', function($menu) { new Remote($this->conf, $menu, $this); });
         
         $menu
             ->addLineBreak(' ')

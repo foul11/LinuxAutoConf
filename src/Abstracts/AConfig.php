@@ -1,6 +1,6 @@
 <?php
 namespace Abstracts;
-// сделать save/restore, или хотябы save поменяв методы __get на get и сделалв методы _get
+
 abstract class AConfig implements \Interfaces\IConfig {
     protected array $opts;
     protected string $source;
@@ -69,7 +69,7 @@ abstract class AConfig implements \Interfaces\IConfig {
         return $this->_get($name);
     }
     
-    public function set(string $name, $value) {
+    public function set(string $name, $value) { // todo: make a separator for arrays, for example: key1.key2 = val === [ key1: [ key2: val ] ]
         $dPath = [];
         $it = $this;
         
@@ -128,4 +128,6 @@ abstract class AConfig implements \Interfaces\IConfig {
     public function changes() {
         return $this->changes;
     }
+    
+    // todo: restore
 }

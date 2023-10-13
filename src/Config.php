@@ -29,7 +29,7 @@ class Config {
     }
     
     static function fromPath(string $path, ConfType $type, $conf = []) {
-        $clazz = new static(file_get_contents($path), $type, $conf);
+        $clazz = new static(file_exists($path) ? file_get_contents($path) : '', $type, $conf);
         $clazz->path = $path;
         
         return $clazz;

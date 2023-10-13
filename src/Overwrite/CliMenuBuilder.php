@@ -42,7 +42,7 @@ class CliMenuBuilder extends \PhpSchool\CliMenu\Builder\CliMenuBuilder {
                 $builder->registerItemStyle($extraItemStyle['class'], $extraItemStyle['style']);
             });
             
-            $callback($builder);
+            return $callback($builder);
         }, $this));
         
         \CliMenuReflects::callProcessItemShortcut($this, $item);

@@ -6,7 +6,6 @@ use PhpSchool\CliMenu\MenuItem\MenuItemInterface;
 use PhpSchool\CliMenu\MenuStyle;
 use PhpSchool\Terminal\Terminal;
 
-// todo: будет содержать разные рефлекты, например для получения ширины экрана и тд, класс статический и методы тоже
 class CliMenuReflects {
     static protected \ReflectionClass $refCliMenu;
     static protected \ReflectionClass $refCliMenuBuilder;

@@ -2,6 +2,7 @@
 namespace Menu;
 use Abstracts\AMenu;
 use Abstracts\AScripts;
+use Arturka\CLI\Debug;
 use MenuItem\LazyMenuMenuItem;
 use PhpSchool\CliMenu\Action\GoBackAction;
 use PhpSchool\CliMenu\Builder\CliMenuBuilder;
@@ -37,10 +38,21 @@ class Apps extends AMenu {
             foreach ($files as $file) {
                 $menu
                     ->addMenuItem(new LazyMenuMenuItem("$file", function(CliMenuBuilder $menu) use($dir, $file) {
-                        $script = (["\\". str_replace('/', '\\', $dir) ."\\$file", 'init'])($this->conf, $menu);
+                        $clazz = (["\\". str_replace('/', '\\', $dir) ."\\$file", 'init']);
                         
-                        if (!$script instanceof AScripts)
-                            throw new \Exception('Script returned a strange object');
+                        try {
+                            $script = $clazz($this->conf, $menu);
+                            
+                            if (!$script instanceof AScripts)
+                                throw new \Exception('Script returned a strange object');
+                        } catch (\Throwable $e) {
+                            if (class_exists($clazz[0]))
+                                throw $e;
+                            
+                            Debug::error("failed load {$clazz[0]}");
+                            
+                            return false;
+                        }
                     }));
             }
             

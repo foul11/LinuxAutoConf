@@ -8,5 +8,5 @@ interface IScripts {
     function install();
     function remove();
     function update();
-    function checkVersion() : ?int;
+    function checkVersion() : ?string;
 }
